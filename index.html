@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+  <title>Intersection Calculator</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  
+  
+</head>
+<body>
+  <header>	
+
+  <main>
+    <center>
+      <div class="section"></div>
+      <a href = "writeup.pdf">
+      <h1 style = "color: #E30000"><u>Intersection Light Time Calculator</u></h1>
+      </a>
+      <h5 >Peter Wu, Rahul Iyer, Joey Hsia, Sejal Madan period 7</h5>
+      <div class="section"></div>
+
+      <div class="container">
+        <div id ="login_page" class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+            <div class='row'>
+              <div class='input-field col s6'>
+                <input type='email' name='email' id='numRed' value = "14"/>
+                <label for='email'># of cars waiting at red</label>
+              </div>
+               <div class='input-field col s6'>
+                 <input type='email' name='email' id='intersectionWidth' value = "33.7"/>
+                <label for='email'>Width of intersection (m)</label>
+              </div>
+            </div>
+
+ 			<div class='row'>
+              <div class='input-field col s6'>
+                 <input type='email' name='email' id='speedLim' value = "15.6"/>
+                <label for='email'>Speed limit (m/s)</label>
+              </div>
+                <div class='input-field col s6'>
+                 <input type='email' name='email' id='reactionTime' value = "0.250"/>
+                <label for='email'>Reaction time (s)</label>
+              </div>
+            </div>
+             <div class='row'>
+              <div class='input-field col s6'>
+                 <input type='email' name='email' id='carLength' value = "4.50"/>
+                <label for='email'>Car length (m)</label>
+              </div>
+              <div class='input-field col s6'>
+                 <input type='email' name='email' id='gapDistance' value = "2.00"/>
+                <label for='email'>Gap distance between cars (m)</label>
+              </div>
+            </div>
+             <div class='row'>
+               <div class='input-field col s6'>
+                 <input type='email' name='email' id='brakeAccel' value = "-3.40"/>
+                <label for='email'>Braking acceleration (m/s²)</label>
+              </div>
+              <div class='input-field col s6'>
+                 <input type='email' name='email' id='goAccel' value = "2.70"/>
+                <label for='email'>Going acceleration (m/s²)</label>
+              </div>
+            </div>
+
+            <center>
+              <div class='row'>
+                <button name='btn_login' class='col s12 btn btn-large waves-effect red darken-3' onclick="calculate()">Calculate light times</button>
+              </div>
+            </center>
+          
+        </div>
+      </div>
+      
+    </center>
+	<center>
+	
+	<div class = "container">
+	<div class="row">
+        <div class="col s4" style="font-weight:bold">
+          &Delta;t<sub>green</sub>
+          <h4 id = "greenTime"></h6>
+        </div>
+        <div class="col s4" style="font-weight:bold">
+          &Delta;t<sub>yellow</sub>
+          <h4 id = "yellowTime"></h6>
+        </div>
+        <div class="col s4" style="font-weight:bold">
+         &Delta;t<sub>red</sub>
+         <h4 id = "redTime"></h6>
+        </div>
+    </div>
+
+</center>
+  </main>
+
+    </header>
+	<main>
+		
+  </main>
+    
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script>
+  var n;
+  var width;
+  var sL;
+  var reaction;
+  var carLen;
+  var brakingAccel;
+  var greenTime;
+  var goingAccel;
+  var distAccel;
+  var distToIntersection;
+  var gapLength;
+  var brakingDistance;
+  	function calculate() {
+  		n = Number(document.getElementById("numRed").value);
+  		width = Number(document.getElementById("intersectionWidth").value);
+  		sL = Number(document.getElementById("speedLim").value);
+  		reaction = Number(document.getElementById("reactionTime").value);
+  		carLen = Number(document.getElementById("carLength").value);
+  		brakingAccel = Number(document.getElementById("brakeAccel").value);
+  		goingAccel = Number(document.getElementById("goAccel").value);
+  		gapLength = Number(document.getElementById("gapDistance").value);
+
+  		var greenT = Math.round(100*calculateGreen())/100;
+  		var yellowT = Math.round(100*calculateYellow())/100;
+  		var redT = Math.round(100*calculateRed())/100;
+
+  		document.getElementById("greenTime").innerHTML = greenT + " sec";
+  		document.getElementById("yellowTime").innerHTML = yellowT + " sec";
+  		document.getElementById("redTime").innerHTML = redT + " sec";
+  	}
+  	function calculateGreen() {
+  		distAccel = (sL * sL) / (2 * goingAccel);
+  		distToIntersection = n * (gapLength + carLen);
+
+  		if(distToIntersection > distAccel) {
+  			return (sL / goingAccel) + ((distToIntersection - distAccel) / sL);
+  		} else {
+  			return Math.sqrt((2 * distToIntersection) / goingAccel);
+  		}
+  	}
+  	function calculateYellow() {
+  		brakingDistance = -(sL * sL) / (2 * brakingAccel) + (reaction * sL);
+  		return (brakingDistance / sL);
+  	}
+
+  	function calculateRed() {
+  		var breakTime = width / sL;
+  		return calculateGreen() + calculateYellow() + breakTime;
+  	}
+
+  </script>
+  </body>
+</html>
