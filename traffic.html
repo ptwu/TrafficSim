@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Traffic Light</title>
+	<style>
+	#trafficCanvas {
+		border: 3px solid black;
+		-webkit-font-smoothing: antialiased;
+	}
+	</style>
+</head>
+<body>
+
+	<canvas id="trafficCanvas" width="130" height="300">
+		If you see this text, that means your browser is outdated and is not able to display HTML5 canvases. Try updating your browser to see this simulation!
+	</canvas><br>
+	<button type="button" onclick="startSimulation(10.68, 1.23, 14.07)">Start/Stop Simulation</button>
+
+	<script>
+		var lightStates = [
+		    {'top': '#383838',   'mid': '#383838',  'bottom': '#3AB54A'}, 
+		    {'top': '#383838', 'mid': 'yellow',  'bottom': '#383838'}, 
+		    {'top': 'red', 'mid': '#383838', 'bottom': '#383838'}, 
+		];
+
+		var lightStateInit = [{'top': '#383838', 'mid': '#383838', 'bottom': '#383838'}];
+
+		var lightPositions = {'top': 50, 'mid': 150, 'bottom': 250,};
+
+		var c = document.getElementById("trafficCanvas");
+		var drawer = c.getContext("2d");
+		drawer.lineWidth = 3;
+
+		drawer.rect(0, 0, 130, 300);
+		drawer.fillStyle = "#EFA522";
+		drawer.fill();
+
+		state = 0;
+		for (var name in lightStateInit[state]) {
+		    drawLight(name, lightStateInit[state][name]);
+		}
+
+		function drawLight(name, color) {
+		    drawer.beginPath();
+		    drawer.arc(65, lightPositions[name], 40, 10, 12 * Math.PI);
+		    drawer.fillStyle = color;
+		    drawer.fill();
+		    drawer.stroke();
+		};
+
+		var greenT;
+		var yellowT;
+		var redT;
+		var timer = null;
+
+		function greenToYellow() {
+			state = 0;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(yellowToRed, greenT);
+		}
+
+		function yellowToRed() {
+			state = 1;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(redToGreen, yellowT);
+		}
+
+		function redToGreen() {
+			state = 2;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(greenToYellow, redT);
+		}
+
+		function startSimulation(green, yellow, red) {
+			//convert seconds to milliseconds
+			greenT = green * 1000;
+			yellowT = yellow * 1000;
+			redT = red * 1000;
+			if(timer != null) {
+				// the timer is running --> stop that timer
+				clearInterval(timer);
+				// reset the timer
+				timer = null;
+				// set the traffic light to an inital state
+				state = 0;
+				for (var name in lightStateInit[state]) {
+				    drawLight(name, lightStateInit[state][name]);
+				}
+			} else {
+				greenToYellow();
+			}
+		}	
+	</script>
+</body>
+</html>

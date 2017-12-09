@@ -10,6 +10,16 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   
+  <style>
+  	#trafficCanvas {
+		border: 3px solid black;
+		-webkit-font-smoothing: antialiased;
+	}
+	#trafficCanvas2 {
+		border: 3px solid black;
+		-webkit-font-smoothing: antialiased;
+	}
+  </style>
   
 </head>
 <body>
@@ -25,8 +35,10 @@
       <div class="section"></div>
 
       <div class="container">
+
         <div id ="login_page" class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
             <div class='row'>
+
               <div class='input-field col s6'>
                 <input type='email' name='email' id='numRed' value = "14"/>
                 <label for='email'># of cars waiting at red</label>
@@ -73,8 +85,15 @@
                 <button name='btn_login' class='col s12 btn btn-large waves-effect red darken-3' onclick="calculate()">Calculate light times</button>
               </div>
             </center>
-          
+          	<canvas id="trafficCanvas" width="130" height="300">
+			If you see this text, that means your browser is outdated and is not able to display HTML5 canvases. Try updating your browser to see this simulation!
+			</canvas>
+			<canvas id="trafficCanvas2" width="130" height="300"></canvas>
+			<button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation();">Start/Stop Simulation</button>
+			<br>
+			<span>&#8203;</span>
         </div>
+
       </div>
       
     </center>
@@ -122,6 +141,9 @@
   var distToIntersection;
   var gapLength;
   var brakingDistance;
+  var gTime;
+  var yTime;
+  var rTime;
   	function calculate() {
   		n = Number(document.getElementById("numRed").value);
   		width = Number(document.getElementById("intersectionWidth").value);
@@ -132,13 +154,13 @@
   		goingAccel = Number(document.getElementById("goAccel").value);
   		gapLength = Number(document.getElementById("gapDistance").value);
 
-  		var greenT = Math.round(100*calculateGreen())/100;
-  		var yellowT = Math.round(100*calculateYellow())/100;
-  		var redT = Math.round(100*calculateRed())/100;
+  		gTime = Math.round(100*calculateGreen())/100;
+  		yTime = Math.round(100*calculateYellow())/100;
+  		rTime = Math.round(100*calculateRed())/100;
 
-  		document.getElementById("greenTime").innerHTML = greenT + " sec";
-  		document.getElementById("yellowTime").innerHTML = yellowT + " sec";
-  		document.getElementById("redTime").innerHTML = redT + " sec";
+  		document.getElementById("greenTime").innerHTML = gTime + " sec";
+  		document.getElementById("yellowTime").innerHTML = yTime + " sec";
+  		document.getElementById("redTime").innerHTML = rTime + " sec";
   	}
   	function calculateGreen() {
   		distAccel = (sL * sL) / (2 * goingAccel);
@@ -160,6 +182,129 @@
   		return calculateGreen() + calculateYellow() + breakTime;
   	}
 
+  	//LIGHT ANIMATION SCRIPTS
+  	var lightStates = [
+		    {'top': '#383838',   'mid': '#383838',  'bottom': '#3AB54A'}, 
+		    {'top': '#383838', 'mid': 'yellow',  'bottom': '#383838'}, 
+		    {'top': 'red', 'mid': '#383838', 'bottom': '#383838'}, 
+		];
+
+		var lightStateInit = [{'top': '#383838', 'mid': '#383838', 'bottom': '#383838'}];
+
+		var lightPositions = {'top': 50, 'mid': 150, 'bottom': 250,};
+
+		var c = document.getElementById("trafficCanvas");
+		var c2 = document.getElementById("trafficCanvas2");
+		var drawer = c.getContext("2d");
+		var drawer2 = c2.getContext("2d");
+		drawer.lineWidth = 3;
+		drawer2.lineWidth = 3;
+		drawer.rect(0, 0, 130, 300);
+		drawer.fillStyle = "#EFA522";
+		drawer.fill();
+
+		drawer2.rect(0, 0, 130, 300);
+		drawer2.fillStyle = "#EFA522";
+		drawer2.fill();
+		state = 0;
+		for (var name in lightStateInit[state]) {
+		    drawLight(name, lightStateInit[state][name]);
+		}
+
+		state = 0;
+		for (var name in lightStateInit[state]) {
+		    drawLight2(name, lightStateInit[state][name]);
+		}
+
+		function drawLight(name, color) {
+		    drawer.beginPath();
+		    drawer.arc(65, lightPositions[name], 40, 10, 12 * Math.PI);
+		    drawer.fillStyle = color;
+		    drawer.fill();
+		    drawer.stroke();
+		};
+
+		function drawLight2(name, color) {
+		    drawer2.beginPath();
+		    drawer2.arc(65, lightPositions[name], 40, 10, 12 * Math.PI);
+		    drawer2.fillStyle = color;
+		    drawer2.fill();
+		    drawer2.stroke();
+		};
+
+		var greenT;
+		var yellowT;
+		var redT;
+		var timer = null;
+
+		function greenToYellow() {
+			state = 0;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(yellowToRed, greenT);
+		}
+
+		function yellowToRed() {
+			state = 1;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(redToGreen, yellowT);
+		}
+
+		function redToGreen() {
+			state = 2;
+		    for (var name in lightStates[state]) {
+		        drawLight(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(greenToYellow, redT);
+		}
+
+		function startSimulation() {
+			//convert seconds to milliseconds
+			greenT = gTime * 1000;
+			yellowT = yTime * 1000;
+			redT = rTime * 1000;
+			if(timer != null) {
+				// the timer is running --> stop that timer
+				clearInterval(timer);
+				// reset the timer
+				timer = null;
+				// set the traffic light to an inital state
+				state = 0;
+				for (var name in lightStateInit[state]) {
+				    drawLight(name, lightStateInit[state][name]);
+				}
+			} else {
+				greenToYellow();
+				redToGreen2();
+			}
+		}	
+
+		function greenToYellow2() {
+			state = 0;
+		    for (var name in lightStates[state]) {
+		        drawLight2(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(yellowToRed2, greenT);
+		}
+
+		function yellowToRed2() {
+			state = 1;
+		    for (var name in lightStates[state]) {
+		        drawLight2(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(redToGreen2, yellowT);
+		}
+
+		function redToGreen2() {
+			state = 2;
+		    for (var name in lightStates[state]) {
+		        drawLight2(name, lightStates[state][name]);
+		    }
+			timer = window.setTimeout(greenToYellow2, redT);
+		}
   </script>
   </body>
 </html>
