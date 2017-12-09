@@ -96,7 +96,7 @@
 			<div class="col s6">
 			<canvas id="trafficCanvas2" width="130" height="300"></canvas>
 			</div>
-			<button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation();">Start/Stop Simulation</button>
+			<button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation(); startSimulation2();">Start/Stop Simulation</button>
 			<br>
 			<span>&#8203;</span>
         </div>
@@ -243,7 +243,7 @@
 		var yellowT;
 		var redT;
 		var timer = null;
-
+		var timer2 = null;
 		function greenToYellow() {
 			state = 0;
 		    for (var name in lightStates[state]) {
@@ -283,18 +283,39 @@
 				for (var name in lightStateInit[state]) {
 				    drawLight(name, lightStateInit[state][name]);
 				}
+				
 			} else {
 				greenToYellow();
-				redToGreen2();
 			}
 		}	
+
+    function startSimulation2() {
+    //convert seconds to milliseconds
+      greenT = gTime * 1000;
+      yellowT = yTime * 1000;
+      redT = rTime * 1000;
+      if(timer2 != null) {
+        // the timer is running --> stop that timer
+        clearInterval(timer2);
+        // reset the timer
+        timer2 = null;
+        // set the traffic light to an inital state
+        state = 0;
+        for (var name in lightStateInit[state]) {
+            drawLight2(name, lightStateInit[state][name]);
+        }
+        
+      } else {
+        redToGreen2();
+      }
+    }
 
 		function greenToYellow2() {
 			state = 0;
 		    for (var name in lightStates[state]) {
 		        drawLight2(name, lightStates[state][name]);
 		    }
-			timer = window.setTimeout(yellowToRed2, greenT);
+			timer2 = window.setTimeout(yellowToRed2, greenT);
 		}
 
 		function yellowToRed2() {
@@ -302,7 +323,7 @@
 		    for (var name in lightStates[state]) {
 		        drawLight2(name, lightStates[state][name]);
 		    }
-			timer = window.setTimeout(redToGreen2, yellowT);
+			timer2 = window.setTimeout(redToGreen2, yellowT);
 		}
 
 		function redToGreen2() {
@@ -310,7 +331,7 @@
 		    for (var name in lightStates[state]) {
 		        drawLight2(name, lightStates[state][name]);
 		    }
-			timer = window.setTimeout(greenToYellow2, redT);
+			timer2 = window.setTimeout(greenToYellow2, redT);
 		}
   </script>
   </body>
