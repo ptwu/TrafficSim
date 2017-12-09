@@ -85,10 +85,17 @@
                 <button name='btn_login' class='col s12 btn btn-large waves-effect red darken-3' onclick="calculate()">Calculate light times</button>
               </div>
             </center>
+            <div class="col s6" style = "font-weight: bold">Road 1 Light</div>
+            <div class="col s6" style = "font-weight: bold">Road 2 Light</div>
+            <br>
+            <div class="col s6">
           	<canvas id="trafficCanvas" width="130" height="300">
 			If you see this text, that means your browser is outdated and is not able to display HTML5 canvases. Try updating your browser to see this simulation!
 			</canvas>
+			</div>
+			<div class="col s6">
 			<canvas id="trafficCanvas2" width="130" height="300"></canvas>
+			</div>
 			<button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation();">Start/Stop Simulation</button>
 			<br>
 			<span>&#8203;</span>
