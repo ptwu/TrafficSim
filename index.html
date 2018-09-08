@@ -22,21 +22,21 @@
   </style>
   
 </head>
-<body>
+<body  style = "background: #fbfbfb;">
   <header>	
 
   <main>
     <center>
       <div class="section"></div>
-      <a href = "writeup.pdf">
-      <h1 style = "color: #E30000">Intersection Light Time Calculator</h1>
-      </a>
-      <h5 >Peter Wu, Rahul Iyer, Joey Hsia, Sejal Madan period 7</h5>
-      <div class="section"></div>
+      
+      <h1 style = "color: #E30000; margin-bottom: 20px;">Intersection Light Time Calculator</h1>
+      <a href = "writeup.pdf">Read the paper here for the physics behind the traffic.</a>
+      <br><br>
+
 
       <div class="container">
 
-        <div id ="login_page" class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+        <div id ="login_page" class="z-depth-1 grey lighten-3 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
             <div class='row'>
 
               <div class='input-field col s6'>
@@ -79,12 +79,8 @@
                 <label for='email'>Going acceleration (m/s²)</label>
               </div>
             </div>
-
-            <center>
-              <div class='row'>
-                <button name='btn_login' class='col s12 btn btn-large waves-effect red darken-3' onclick="calculate()">Calculate light times</button>
-              </div>
-            </center>
+           
+          
             <div class="col s6" style = "font-weight: bold">Road 1 Light</div>
             <div class="col s6" style = "font-weight: bold">Road 2 Light</div>
             <br>
@@ -95,9 +91,11 @@
 			</div>
 			<div class="col s6">
 			<canvas id="trafficCanvas2" width="130" height="300"></canvas>
+
 			</div>
-			<button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation(); startSimulation2();">Start/Stop Simulation</button>
-			<br>
+			
+			<br><br>
+			 <button class='col s12 btn btn-large waves-effect green darken' onclick="calculate(); startSimulation(); startSimulation2();">Start/Stop Simulation</button>
 			<span>&#8203;</span>
         </div>
 
@@ -106,6 +104,7 @@
     </center>
 	<center>
 	
+	<h3>Optimized Light Cycle Times</h3>
 	<div class = "container">
 	<div class="row">
         <div class="col s4" style="font-weight:bold">
